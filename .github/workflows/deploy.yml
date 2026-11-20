@@ -16,15 +16,12 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0   # historique complet : dates de modification de chaque site
+          fetch-depth: 0 # historique complet : dates de modification de chaque site
 
       - uses: actions/setup-node@v4
         with:
@@ -37,6 +34,7 @@ jobs:
         run: |
           mkdir -p _site
           cp -r index.html sites.json css js fonts sites _site/
+          [ -f sites.js ] && cp sites.js _site/ || true
           [ -f CNAME ] && cp CNAME _site/ || true
           [ -f 404.html ] && cp 404.html _site/ || true
 
@@ -44,5 +42,14 @@ jobs:
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site
+
+  # Job séparé : laisse le temps à GitHub d'enregistrer l'artefact avant le déploiement
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
       - id: deployment
         uses: actions/deploy-pages@v4
