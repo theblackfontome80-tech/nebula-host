@@ -1,0 +1,46 @@
+/* Animation d'entrée « Rayan's workspace » */
+.intro{position:fixed;inset:0;z-index:200;display:grid;place-items:center;padding:24px;cursor:pointer;
+  background:radial-gradient(ellipse at 50% 50%,rgba(11,11,18,.2) 0%,rgba(11,11,18,.75) 75%);
+  transition:opacity .7s ease,filter .7s ease,transform .7s cubic-bezier(.4,0,.2,1)}
+.intro.out{opacity:0;filter:blur(14px);transform:scale(1.06);pointer-events:none}
+.intro-inner{text-align:center;display:flex;flex-direction:column;align-items:center}
+
+.intro-logo{width:64px;height:64px;border-radius:20px;display:grid;place-items:center;font-size:28px;color:#fff;margin-bottom:28px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  box-shadow:0 0 0 0 rgba(124,92,255,.6),0 12px 40px rgba(124,92,255,.45);
+  opacity:0;transform:scale(.4) rotate(-45deg);
+  animation:introLogo .9s cubic-bezier(.2,1.4,.3,1) .1s forwards,introPulse 2.4s ease-out 1s infinite}
+@keyframes introLogo{to{opacity:1;transform:none}}
+@keyframes introPulse{0%{box-shadow:0 0 0 0 rgba(124,92,255,.55),0 12px 40px rgba(124,92,255,.45)}70%,100%{box-shadow:0 0 0 26px rgba(124,92,255,0),0 12px 40px rgba(124,92,255,.45)}}
+
+.intro-title{font-size:clamp(40px,10vw,104px);font-weight:800;letter-spacing:-.045em;line-height:1.02;display:flex;flex-wrap:wrap;justify-content:center;gap:0 .28em}
+.intro-word{display:inline-flex;white-space:nowrap}
+.intro-title .ch{display:inline-block;opacity:0;filter:blur(14px);transform:translateY(.45em) scale(.92);
+  animation:introCh .75s cubic-bezier(.2,.8,.2,1) forwards;animation-delay:calc(var(--i) * 48ms + 450ms)}
+.intro-word.first .ch{color:#fff;text-shadow:0 0 40px rgba(124,92,255,.45)}
+.intro-word.second .ch{text-shadow:0 0 36px rgba(34,211,238,.35)}
+@keyframes introCh{to{opacity:1;filter:none;transform:none}}
+
+.intro-line{height:3px;width:min(340px,60vw);border-radius:9px;margin-top:26px;transform:scaleX(0);
+  background:linear-gradient(90deg,transparent,var(--accent),var(--accent2),transparent);
+  animation:introLine .9s cubic-bezier(.6,0,.2,1) 1.25s forwards}
+@keyframes introLine{to{transform:scaleX(1)}}
+
+.intro-sub{margin-top:18px;color:var(--muted);font-size:clamp(14px,2.4vw,17px);font-weight:500;letter-spacing:.02em;
+  opacity:0;transform:translateY(8px);animation:introSub .7s ease 1.55s forwards}
+@keyframes introSub{to{opacity:1;transform:none}}
+.intro-skip{position:absolute;bottom:26px;left:0;right:0;text-align:center;font-size:12px;color:var(--muted);opacity:0;animation:introSub .6s ease 1.9s forwards}
+
+/* Arrivée du tableau de bord après l'intro */
+body.revealing .layout{animation:introReveal .9s cubic-bezier(.2,.8,.2,1) both}
+body.revealing .card{animation:introReveal .8s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--n, 0) * 70ms + 150ms)}
+@keyframes introReveal{from{opacity:0;transform:translateY(18px)}}
+body.intro-on{overflow:hidden}
+body.intro-on .layout{opacity:0}
+
+@media (prefers-reduced-motion:reduce){
+  .intro-logo,.intro-title .ch,.intro-line,.intro-sub,.intro-skip{animation-duration:.01ms!important;animation-delay:0s!important}
+  .intro{transition-duration:.3s}
+  .intro.out{transform:none;filter:none}
+  body.revealing .layout,body.revealing .card{animation:none}
+}
