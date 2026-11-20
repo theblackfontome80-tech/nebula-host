@@ -1,0 +1,37 @@
+# Installation unique : décompresse le zip envoyé puis lance la publication.
+# Peut être supprimé une fois le site en ligne.
+name: Installer le zip
+
+on:
+  push:
+    branches: [main]
+    paths: ['**.zip']
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Décompresser et committer
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -e
+          ZIP=$(ls *.zip | head -1)
+          unzip -o -q "$ZIP" -d /tmp/z || true
+          chmod -R u+rwX /tmp/z
+          SRC=$(dirname "$(find /tmp/z -name index.html -path '*nebula-host/index.html' | head -1)")
+          rm -rf "$SRC/.github"
+          cp -r "$SRC"/. "$GITHUB_WORKSPACE"/
+          git rm -q "$ZIP"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Ajout du contenu de nebula-host"
+          git push
+          gh workflow run deploy.yml --ref main
