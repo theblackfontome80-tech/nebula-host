@@ -24,7 +24,7 @@ async function load() {
     if (!r.ok) throw new Error(r.status);
     data = await r.json();
   } catch {
-    data = { sites: [] };
+    data = window.SITES_DATA || { sites: [] }; // ouverture en file:// (double-clic)
   }
   $('builtAt').textContent = data.builtAt ? ago(data.builtAt) : '—';
   const link = $('uploadLink');
