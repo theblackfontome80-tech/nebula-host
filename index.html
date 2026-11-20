@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Nebula Host</title>
+<meta name="description" content="Tous mes sites web au même endroit.">
+<link rel="stylesheet" href="css/base.css">
+<style>
+  .side-foot{margin-top:auto;padding:14px;border-radius:12px;background:var(--panel2);border:1px solid var(--line);font-size:13px;color:var(--muted)}
+  .side-foot b.v{display:block;color:var(--text);font-weight:700;margin-top:4px}
+
+  main{padding:32px 40px;max-width:1300px;width:100%}
+  header{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:28px}
+  h1{font-size:28px;font-weight:800;letter-spacing:-.03em}
+  .sub{color:var(--muted);margin-top:4px}
+
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:28px}
+  .stat{background:var(--glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:var(--radius);padding:18px 20px}
+  .stat span{color:var(--muted);font-size:13px;font-weight:500}
+  .stat b{display:block;font-size:26px;font-weight:800;margin-top:6px;letter-spacing:-.02em}
+
+  .search{display:flex;align-items:center;gap:10px;background:var(--glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:12px;padding:0 14px;margin-bottom:20px}
+  .search input{flex:1;background:none;border:0;outline:0;padding:11px 0}
+  .search svg{width:18px;color:var(--muted)}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:18px}
+  .card{background:var(--glass);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;transition:.2s;display:flex;flex-direction:column}
+  .card:hover{border-color:#3a3a52;transform:translateY(-3px);box-shadow:0 16px 40px rgba(0,0,0,.35)}
+  .thumb{height:170px;background:#fff;position:relative;overflow:hidden;border-bottom:1px solid var(--line)}
+  .thumb iframe{width:400%;height:400%;transform:scale(.25);transform-origin:0 0;border:0;pointer-events:none}
+  .thumb .empty{position:absolute;inset:0;display:grid;place-items:center;background:var(--panel2);color:var(--muted);font-size:13px}
+  .thumb a{position:absolute;inset:0}
+  .card-body{padding:16px 18px;display:flex;flex-direction:column;gap:10px;flex:1}
+  .card-title{display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .card-title h3{font-size:16px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .pill{font-size:11px;font-weight:700;padding:4px 9px;border-radius:99px;background:rgba(52,211,153,.12);color:var(--ok);display:inline-flex;align-items:center;gap:5px;flex-shrink:0}
+  .pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+  .pill.off{background:rgba(255,92,122,.12);color:var(--danger)}
+  .url{font-size:13px;color:var(--accent2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .desc{font-size:13px;color:var(--muted)}
+  .meta{display:flex;gap:14px;font-size:12.5px;color:var(--muted);flex-wrap:wrap}
+  .actions{display:flex;gap:8px;margin-top:auto;padding-top:4px}
+  .actions .btn{flex:1}
+
+  .blank{grid-column:1/-1;text-align:center;padding:70px 20px;border:1.5px dashed var(--line);border-radius:var(--radius);color:var(--muted);background:var(--glass)}
+  .blank h3{color:var(--text);font-size:19px;margin:14px 0 6px}
+  .blank .btn{margin-top:18px}
+
+  .overlay{position:fixed;inset:0;background:rgba(5,5,10,.7);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:16px;z-index:50}
+  .overlay.open{display:flex}
+  .modal{background:var(--panel);border:1px solid var(--line);border-radius:20px;width:100%;max-width:520px;padding:26px}
+  .modal h2{font-size:21px;font-weight:800;letter-spacing:-.02em;margin-bottom:14px}
+  .modal ol{padding-left:20px;display:grid;gap:10px;color:var(--muted);line-height:1.5}
+  .modal ol b{color:var(--text)}
+  .modal code{background:var(--bg);border:1px solid var(--line);padding:1px 6px;border-radius:6px;color:var(--accent2);font-size:13px}
+  .modal-foot{display:flex;justify-content:flex-end;gap:10px;margin-top:22px}
+
+  @media (max-width:820px){
+    .layout{grid-template-columns:1fr}
+    aside.side{position:static;height:auto;flex-direction:row;align-items:center;padding:12px 16px;border-right:0;border-bottom:1px solid var(--line)}
+    .logo{padding:0;margin-right:auto}
+    .nav,.side-foot{display:none}
+    main{padding:22px 16px}
+    .stats{gap:10px}
+    .stat{padding:14px}.stat b{font-size:20px}
+  }
+</style>
+</head>
+<body>
+<div class="layout">
+  <aside class="side">
+    <div class="logo"><i>◆</i>Nebula Host</div>
+    <div class="nav active">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+      Mes sites
+    </div>
+    <button class="nav" type="button" data-action="add">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+      Ajouter un site
+    </button>
+    <div class="side-foot">
+      Dernière mise à jour
+      <b class="v" id="builtAt">—</b>
+    </div>
+  </aside>
+
+  <main>
+    <header>
+      <div>
+        <h1>Mes sites web</h1>
+        <p class="sub">Tous mes projets, hébergés et prévisualisés au même endroit.</p>
+      </div>
+      <button class="btn primary" type="button" data-action="add">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 5v14M5 12h14"/></svg>
+        Ajouter un site
+      </button>
+    </header>
+
+    <section class="stats">
+      <div class="stat"><span>Sites hébergés</span><b id="sCount">0</b></div>
+      <div class="stat"><span>Fichiers</span><b id="sFiles">0</b></div>
+      <div class="stat"><span>Stockage</span><b id="sSize">0 o</b></div>
+    </section>
+
+    <div class="search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input id="q" placeholder="Rechercher un site…" aria-label="Rechercher un site">
+    </div>
+
+    <section class="grid" id="grid"></section>
+  </main>
+</div>
+
+<div class="overlay" id="ov">
+  <div class="modal" role="dialog" aria-labelledby="addTitle">
+    <h2 id="addTitle">Ajouter un site</h2>
+    <ol>
+      <li>Sur GitHub, ouvre le dossier <code>sites</code> du dépôt et clique sur <b>Add file → Upload files</b>.</li>
+      <li>Glisse le <b>dossier</b> de ton site (il doit contenir un <code>index.html</code>). Son nom devient l'adresse : <code id="exampleUrl">/sites/mon-site/</code></li>
+      <li>Clique sur <b>Commit changes</b>. Le site apparaît ici automatiquement en moins d'une minute.</li>
+    </ol>
+    <div class="modal-foot">
+      <button class="btn" type="button" data-action="close">Fermer</button>
+      <a class="btn primary" id="uploadLink" target="_blank" rel="noopener noreferrer">Ouvrir GitHub ↗</a>
+    </div>
+  </div>
+</div>
+
+<script src="js/app.js"></script>
+<script src="js/neuro-noise.js"></script>
+</body>
+</html>

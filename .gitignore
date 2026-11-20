@@ -1,0 +1,6 @@
+# Généré automatiquement par la GitHub Action
+sites.json
+_site/
+node_modules/
+.DS_Store
+Thumbs.db
