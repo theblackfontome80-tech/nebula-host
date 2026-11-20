@@ -1,0 +1,48 @@
+# Publie le site sur GitHub Pages à chaque modification de la branche main
+name: Publier sur GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # historique complet : dates de modification de chaque site
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Générer la liste des sites
+        run: node scripts/build-sites.mjs
+
+      - name: Préparer les fichiers publiés
+        run: |
+          mkdir -p _site
+          cp -r index.html sites.json css js fonts sites _site/
+          [ -f CNAME ] && cp CNAME _site/ || true
+          [ -f 404.html ] && cp 404.html _site/ || true
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - id: deployment
+        uses: actions/deploy-pages@v4
